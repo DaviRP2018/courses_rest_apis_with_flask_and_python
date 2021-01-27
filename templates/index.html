@@ -1,0 +1,27 @@
+<html lang="pt-BR">
+<head>
+  <script type="text/javascript">
+    function httpGetAsync(theUrl, callback) {
+      let xmlHttp = new XMLHttpRequest();
+      xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState === 4 && xmlHttp.status === 200)
+          callback(xmlHttp.responseText);
+      }
+      xmlHttp.open("GET", theUrl, true);  // true for asynchronous
+      xmlHttp.send(null);
+    }
+
+    httpGetAsync("http://127.0.0.1:5000/store", function (response) {
+        alert(response);
+    })
+  </script>
+  <title>My webserver</title>
+</head>
+<body>
+
+  <div id="myElement">
+    lixo
+  </div>
+
+</body>
+</html>
