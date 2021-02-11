@@ -1,5 +1,7 @@
-from flask import Flask
+from flask import Flask, request
 from flask_restful import Resource, Api
+
+from Section4.settings import DEBUG
 
 app = Flask(__name__)
 api = Api(app)
@@ -9,18 +11,26 @@ items = []
 
 class Item(Resource):
     def get(self, name):
-        for item in items:
-            if item["name"] == name:
-                return item
-        return {}, 404
+        item = next(filter(lambda x: x["name"] == name, items), None)
+        return {"item": item}, 200 if item is not None else 404
 
     def post(self, name):
-        item = {"name": name, "price": 12.00}
+        if next(filter(lambda x: x["name"] == name, items), None) is not None:
+            return {"message": f"An item with name '{name}' already exists."}, 400
+        # data = request.get_json(force=True)  # force: ignore header Content-Type and try to format to json
+        data = request.get_json(silent=True)  # silent: ignore header Content-Type and return null
+        item = {"name": name, "price": data["price"]}
         items.append(item)
         return item, 201
 
 
+class ItemList(Resource):
+    def get(self):
+        return {"items": items}
+
+
 api.add_resource(Item, "/item/<string:name>")
+api.add_resource(ItemList, "/items")
 
 if __name__ == "main":
-    app.run(port=5000)
+    app.run(port=5000, debug=DEBUG)
