@@ -4,6 +4,7 @@ from flask_restful import Resource, Api
 from Section4.settings import DEBUG
 
 app = Flask(__name__)
+app.secret_key = "Davi"
 api = Api(app)
 
 items = []
