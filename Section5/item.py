@@ -35,12 +35,23 @@ class Item(Resource):
         connection.commit()
         connection.close()
 
+    @classmethod
+    def update(cls, item):
+        connection = sqlite3.connect("data.db")
+        cursor = connection.cursor()
+
+        query = "UPDATE items SET price=? WHERE name=?;"
+        cursor.execute(query, (item["price"], item["name"]))
+
+        connection.commit()
+        connection.close()
+
     # @jwt_required()
     def get(self, name):
         try:
             item = self.find_by_name(name)
         except Exception as err:
-            return {"message": f"An error occurred inserting the item.\nError: {err}"}, 500
+            return {"message": f"An error occurred searching the item.\nError: {err}"}, 500
         else:
             if item:
                 return item
@@ -81,13 +92,25 @@ class Item(Resource):
     def put(self, name):
         data = Item.parser.parse_args()
 
-        item = next(filter(lambda x: x["name"] == name, items), None)
-        if item is None:
-            item = {"name": name, "price": data["price"]}
-            items.append(item)
+        try:
+            item = self.find_by_name(name)
+        except Exception as err:
+            return {"message": f"An error occurred searching the item.\nError: {err}"}, 500
         else:
-            item.update(data)
-        return {"item": item}
+            updated_item = {"name": name, "price": data["price"]}
+
+            if item is None:
+                try:
+                    self.insert(updated_item)
+                except Exception as err:
+                    return {"message": f"An error occurred inserting the item.\nError: {err}"}, 500
+            else:
+                try:
+                    self.update(updated_item)
+                except Exception as err:
+                    return {"message": f"An error occurred updating the item.\nError: {err}"}, 500
+                
+            return {"item": updated_item}
 
 
 class ItemList(Resource):
