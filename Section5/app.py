@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask
 from flask_jwt import JWT
 from flask_restful import Resource, Api, reqparse
 
