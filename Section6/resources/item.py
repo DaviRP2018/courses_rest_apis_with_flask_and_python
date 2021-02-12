@@ -34,7 +34,7 @@ class Item(Resource):
         item = ItemModel(name, data["price"])
 
         try:
-            item.insert()
+            item.save_to_db()
         except Exception as err:
             return {"message": f"An error occurred inserting the item.\nError: {err}"}, 500
 
@@ -42,18 +42,10 @@ class Item(Resource):
 
     # @jwt_required()
     def delete(self, name):
-        if not ItemModel.find_by_name(name):
+        item = ItemModel.find_by_name(name)
+        if not item:
             return {"message": "Item already deleted."}
-
-        connection = sqlite3.connect("../data.db")
-        cursor = connection.cursor()
-
-        query = "DELETE FROM items WHERE name=?;"
-        cursor.execute(query, (name,))
-
-        connection.commit()
-        connection.close()
-
+        item.delete_from_db()
         return {"message": "item deleted"}
 
     # @jwt_required()
@@ -65,20 +57,19 @@ class Item(Resource):
         except Exception as err:
             return {"message": f"An error occurred searching the item.\nError: {err}"}, 500
         else:
-            updated_item = ItemModel(name, data["price"])
-
             if item is None:
                 try:
-                    updated_item.insert()
+                    item = ItemModel(name, data["price"])
+                    item.save_to_db()
                 except Exception as err:
                     return {"message": f"An error occurred inserting the item.\nError: {err}"}, 500
             else:
                 try:
-                    updated_item.update()
+                    item.price = data["price"]
                 except Exception as err:
                     return {"message": f"An error occurred updating the item.\nError: {err}"}, 500
 
-            return updated_item.json()
+            return item.json()
 
 
 class ItemList(Resource):
