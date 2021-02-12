@@ -1,5 +1,3 @@
-import sqlite3
-
 from Section6.db import db
 
 
