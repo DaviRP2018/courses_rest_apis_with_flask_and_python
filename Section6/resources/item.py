@@ -14,7 +14,7 @@ class Item(Resource):
 
     @classmethod
     def find_by_name(cls, name):
-        connection = sqlite3.connect("data.db")
+        connection = sqlite3.connect("../data.db")
         cursor = connection.cursor()
 
         query = "SELECT * FROM items WHERE name=?;"
@@ -27,7 +27,7 @@ class Item(Resource):
 
     @classmethod
     def insert(cls, item):
-        connection = sqlite3.connect("data.db")
+        connection = sqlite3.connect("../data.db")
         cursor = connection.cursor()
 
         query = "INSERT INTO items VALUES (?, ?);"
@@ -38,7 +38,7 @@ class Item(Resource):
 
     @classmethod
     def update(cls, item):
-        connection = sqlite3.connect("data.db")
+        connection = sqlite3.connect("../data.db")
         cursor = connection.cursor()
 
         query = "UPDATE items SET price=? WHERE name=?;"
@@ -78,7 +78,7 @@ class Item(Resource):
         if not self.find_by_name(name):
             return {"message": "Item already deleted."}
 
-        connection = sqlite3.connect("data.db")
+        connection = sqlite3.connect("../data.db")
         cursor = connection.cursor()
 
         query = "DELETE FROM items WHERE name=?;"
@@ -117,7 +117,7 @@ class Item(Resource):
 class ItemList(Resource):
     # @jwt_required()
     def get(self):
-        connection = sqlite3.connect("data.db")
+        connection = sqlite3.connect("../data.db")
         cursor = connection.cursor()
 
         query = "SELECT * FROM items;"

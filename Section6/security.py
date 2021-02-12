@@ -1,6 +1,6 @@
 from werkzeug.security import safe_str_cmp
 
-from Section6.user import User
+from Section6.resources.user import User
 
 
 def authenticate(username, password):
