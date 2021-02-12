@@ -1,4 +1,5 @@
 import sqlite3
+
 from flask_restful import Resource, reqparse
 
 
@@ -109,11 +110,20 @@ class Item(Resource):
                     self.update(updated_item)
                 except Exception as err:
                     return {"message": f"An error occurred updating the item.\nError: {err}"}, 500
-                
+
             return {"item": updated_item}
 
 
 class ItemList(Resource):
     # @jwt_required()
     def get(self):
+        connection = sqlite3.connect("data.db")
+        cursor = connection.cursor()
+
+        query = "SELECT * FROM items;"
+        result = cursor.execute(query)
+        items = [{"name": row[0], "price": row[1]} for row in result]
+
+        connection.close()
+
         return {"items": items}
